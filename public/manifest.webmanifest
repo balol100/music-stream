@@ -1,0 +1,21 @@
+{
+  "name": "MusicStream — שירים מכל הזמנים",
+  "short_name": "MusicStream",
+  "description": "אפליקציית שירים בעברית עם נגן YouTube מוטמע",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "he",
+  "background_color": "#0b0716",
+  "theme_color": "#0b0716",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
