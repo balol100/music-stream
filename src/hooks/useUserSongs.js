@@ -1,8 +1,6 @@
 import { useCallback } from "react";
 import { useLocalStorage } from "./useLocalStorage.js";
 
-// Normalises a YouTube search result into a Song record compatible with the
-// rest of the app. Tagged so it can be filtered with "השירים שלי".
 function eraFromYear(year) {
   if (!year) return "new";
   if (year >= 2018) return "new";
@@ -12,36 +10,66 @@ function eraFromYear(year) {
   return "60s-70s";
 }
 
+// Normalises a YouTube search result into a Song record.
 export function ytResultToSong(result) {
   return {
     id: result.id,
+    source: "youtube",
     title: result.title,
     artist: result.artist || "YouTube",
     year: result.publishedYear ?? null,
     era: eraFromYear(result.publishedYear),
     mood: "YouTube",
-    tags: ["user"],
+    tags: ["user", "youtube"],
     addedAt: Date.now(),
     thumbOverride: result.thumb || null,
+  };
+}
+
+// Normalises a SoundCloud search result into a Song record.
+export function scResultToSong(result) {
+  return {
+    id: result.id, // already "sc:NUMERIC_ID"
+    source: "soundcloud",
+    soundcloudTrackId: String(result.trackId),
+    soundcloudUrl: result.permalinkUrl,
+    title: result.title,
+    artist: result.artist || "SoundCloud",
+    year: result.publishedYear ?? null,
+    era: eraFromYear(result.publishedYear),
+    mood: "SoundCloud",
+    tags: ["user", "soundcloud"],
+    addedAt: Date.now(),
+    thumbOverride: result.artworkUrl || null,
   };
 }
 
 export function useUserSongs() {
   const [songs, setSongs] = useLocalStorage("musicstream:user-songs", []);
 
-  const addFromYt = useCallback(
-    (ytResult) => {
+  const addSong = useCallback(
+    (songRecord) => {
       let already = false;
       setSongs((prev) => {
-        if (prev.some((s) => s.id === ytResult.id)) {
+        if (prev.some((s) => s.id === songRecord.id)) {
           already = true;
           return prev;
         }
-        return [ytResultToSong(ytResult), ...prev];
+        return [songRecord, ...prev];
       });
       return !already;
     },
     [setSongs],
+  );
+
+  const addFromYt = useCallback(
+    (ytResult) => addSong(ytResultToSong(ytResult)),
+    [addSong],
+  );
+
+  const addFromSc = useCallback(
+    (scResult) => addSong(scResultToSong(scResult)),
+    [addSong],
   );
 
   const remove = useCallback(
@@ -51,5 +79,5 @@ export function useUserSongs() {
 
   const has = useCallback((id) => songs.some((s) => s.id === id), [songs]);
 
-  return { userSongs: songs, addFromYt, remove, has };
+  return { userSongs: songs, addFromYt, addFromSc, addSong, remove, has };
 }

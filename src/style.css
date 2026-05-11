@@ -961,6 +961,109 @@ a { color: inherit; }
 }
 
 /* =================================================================
+   Source-aware badges (YT vs SoundCloud)
+   ================================================================= */
+.source-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+}
+.source-badge.src-yt { background: rgba(255, 0, 0, 0.18); color: #ff8a8a; border: 1px solid rgba(255, 0, 0, 0.4); }
+.source-badge.src-sc { background: rgba(255, 85, 0, 0.18); color: #ffb380; border: 1px solid rgba(255, 85, 0, 0.4); }
+
+.song-source-tag {
+  position: absolute;
+  inset-inline-start: 10px;
+  bottom: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.4px;
+}
+.song-source-tag.src-sc { background: rgba(255, 85, 0, 0.85); }
+.song-source-tag.src-yt { background: rgba(0, 0, 0, 0.65); }
+
+.yt-result-srcbadge {
+  position: absolute;
+  inset-inline-start: 6px;
+  top: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.4px;
+}
+.yt-result-srcbadge.src-sc { background: rgba(255, 85, 0, 0.9); }
+
+.player-frame-sc iframe {
+  /* SoundCloud's visual widget is square-ish — give it a different shape. */
+  aspect-ratio: 1 / 1;
+}
+
+.sc-bg-hint {
+  margin: 10px 4px 0;
+  padding: 8px 12px;
+  background: rgba(255, 85, 0, 0.12);
+  border: 1px solid rgba(255, 85, 0, 0.32);
+  border-radius: var(--radius-md);
+  color: #ffb380;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =================================================================
+   Provider toggle (YT | SC)
+   ================================================================= */
+.provider-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 14px;
+}
+.provider-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background var(--fade-fast), color var(--fade-fast);
+}
+.provider-btn:hover { color: var(--text); }
+.provider-btn:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+.provider-btn.active.src-yt { background: linear-gradient(135deg, #cc0000, #ff0000); color: #fff; }
+.provider-btn.active.src-sc { background: linear-gradient(135deg, #ff5500, #ff8800); color: #fff; }
+
+/* SC badge in footer (mirrors yt-badge) */
+.sc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  margin-inline-start: 6px;
+}
+
+/* =================================================================
    YouTube Search
    ================================================================= */
 .yt-search { margin: 28px 0 8px; }

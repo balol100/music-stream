@@ -5,7 +5,7 @@ export default function Footer({ onOpenLegal }) {
     <footer className="site-footer" role="contentinfo">
       <div className="attribution">
         <p className="attribution-line">
-          🎵 <strong>כל התוכן מוזרם ישירות מ-YouTube.</strong> הזכויות שייכות
+          🎵 <strong>כל התוכן מוזרם ישירות מ-YouTube ומ-SoundCloud.</strong> הזכויות שייכות
           ליוצרים ולחברות התקליטים. אנחנו לא מאחסנים, מורידים, או מפיצים
           תוכן מוגן.
         </p>
@@ -17,6 +17,12 @@ export default function Footer({ onOpenLegal }) {
               <path d="M9.8 15.4 15.6 12 9.8 8.6Z" fill="#fff"/>
             </svg>
             YouTube
+          </span>
+          <span className="sc-badge" aria-label="SoundCloud">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+              <path d="M1 14a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0v-3a1 1 0 0 1 1-1Zm3-2a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Zm3-3a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0v-8a1 1 0 0 1 1-1Zm3-2a1 1 0 0 1 1 1v9a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1Zm10 3a4 4 0 0 1 0 8h-7a1 1 0 0 1-1-1V8.5A4.5 4.5 0 0 1 21 10Z" fill="#ff5500"/>
+            </svg>
+            SoundCloud
           </span>
         </p>
       </div>

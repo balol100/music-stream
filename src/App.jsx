@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { SONGS as BASE_SONGS, MOODS, matchesEra } from "./data/songs.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
-import { useUserSongs, ytResultToSong } from "./hooks/useUserSongs.js";
+import { useUserSongs, ytResultToSong, scResultToSong } from "./hooks/useUserSongs.js";
 import Header from "./components/Header.jsx";
 import Player from "./components/Player.jsx";
 import Filters from "./components/Filters.jsx";
@@ -12,7 +12,7 @@ import Footer from "./components/Footer.jsx";
 import MoodAI from "./components/MoodAI.jsx";
 import AIPlaylistCard from "./components/AIPlaylistCard.jsx";
 import PlaylistsPanel from "./components/PlaylistsPanel.jsx";
-import YouTubeSearch from "./components/YouTubeSearch.jsx";
+import MusicSearch from "./components/MusicSearch.jsx";
 import LegalModal from "./components/LegalModal.jsx";
 import AccessibilityPanel from "./components/AccessibilityPanel.jsx";
 import { savePlaylist, incrementPlayCount } from "./lib/api.js";
@@ -23,7 +23,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useLocalStorage("musicstream:favorites", []);
   const [view, setView] = useLocalStorage("musicstream:view", "grid");
-  const [activeTab, setActiveTab] = useState("library"); // library | youtube | favorites | playlists
+  const [activeTab, setActiveTab] = useState("library"); // library | search | favorites | playlists
+  const [searchProvider, setSearchProvider] = useLocalStorage("musicstream:search-provider", "youtube");
   const [isShuffle, setIsShuffle] = useLocalStorage("musicstream:shuffle", false);
   const [isRepeat, setIsRepeat] = useLocalStorage("musicstream:repeat", false);
   const [toast, setToast] = useState("");
@@ -38,7 +39,7 @@ export default function App() {
   const searchRef = useRef(null);
   const playerRef = useRef(null);
 
-  const { userSongs, addFromYt, has: hasUserSong } = useUserSongs();
+  const { userSongs, addFromYt, addFromSc, has: hasUserSong } = useUserSongs();
   const catalog = useMemo(() => {
     const baseIds = new Set(BASE_SONGS.map((s) => s.id));
     // User songs first (most recently added on top), then base catalog. De-dupe by id.
@@ -198,21 +199,38 @@ export default function App() {
     setToast("היציאה ממצב פלייליסט");
   }, []);
 
-  // YouTube search → play / add to catalog
+  // Search results → play / add to catalog (works for both providers).
   const handleYtPlay = useCallback((ytResult) => {
     addFromYt(ytResult);
     const song = ytResultToSong(ytResult);
     setCurrentSong(song);
+    setQueue(null);
     setToast(`▶ ${song.title}`);
     if (window.matchMedia("(max-width: 980px)").matches) {
       setTimeout(() => playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
     }
   }, [addFromYt]);
 
+  const handleScPlay = useCallback((scResult) => {
+    addFromSc(scResult);
+    const song = scResultToSong(scResult);
+    setCurrentSong(song);
+    setQueue(null);
+    setToast(`▶ ${song.title}`);
+    if (window.matchMedia("(max-width: 980px)").matches) {
+      setTimeout(() => playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    }
+  }, [addFromSc]);
+
   const handleYtAddToCatalog = useCallback((ytResult) => {
     const added = addFromYt(ytResult);
     setToast(added ? "נוסף לקטלוג ✓" : "כבר בקטלוג");
   }, [addFromYt]);
+
+  const handleScAddToCatalog = useCallback((scResult) => {
+    const added = addFromSc(scResult);
+    setToast(added ? "נוסף לקטלוג ✓" : "כבר בקטלוג");
+  }, [addFromSc]);
 
   useKeyboardShortcuts({
     onArrowLeft: playPrev,
@@ -287,7 +305,7 @@ export default function App() {
             />
           </section>
 
-          {activeTab !== "youtube" && (
+          {activeTab !== "search" && (
             <MoodAI
               catalog={catalog}
               onPlaylistGenerated={handleAIPlaylist}
@@ -295,7 +313,7 @@ export default function App() {
             />
           )}
 
-          {aiPlaylist && activeTab !== "youtube" && (
+          {aiPlaylist && activeTab !== "search" && (
             <AIPlaylistCard
               playlist={aiPlaylist}
               songs={catalog}
@@ -315,10 +333,14 @@ export default function App() {
             />
           )}
 
-          {activeTab === "youtube" ? (
-            <YouTubeSearch
-              onPlay={handleYtPlay}
-              onAddToCatalog={handleYtAddToCatalog}
+          {activeTab === "search" ? (
+            <MusicSearch
+              provider={searchProvider}
+              onProviderChange={setSearchProvider}
+              onPlayYt={handleYtPlay}
+              onPlaySc={handleScPlay}
+              onAddYt={handleYtAddToCatalog}
+              onAddSc={handleScAddToCatalog}
               isInCatalog={(id) => hasUserSong(id) || BASE_SONGS.some((s) => s.id === id)}
               onError={handleAIError}
               onToast={setToast}

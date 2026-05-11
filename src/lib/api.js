@@ -1,5 +1,25 @@
 import { supabase, FUNCTIONS_BASE, DEVICE_ID } from "./supabase.js";
 
+export async function searchSoundCloud(query) {
+  const res = await fetch(`${FUNCTIONS_BASE}/soundcloud-search`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${supabase.supabaseKey}`,
+      apikey: supabase.supabaseKey,
+    },
+    body: JSON.stringify({ query }),
+  });
+  const data = await res.json().catch(() => ({ error: "bad_json" }));
+  if (!res.ok) {
+    const err = new Error(data?.message || data?.error || `HTTP ${res.status}`);
+    err.code = data?.error;
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
 export async function searchYouTube(query) {
   const res = await fetch(`${FUNCTIONS_BASE}/youtube-search`, {
     method: "POST",

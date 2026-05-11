@@ -14,6 +14,47 @@ export const ERAS = [
 // more than one filter (e.g. an Eyal Golan song lives in "ישראלי" via `era`
 // but also shows under "מזרחי" via `tags`).
 export const SONGS = [
+  // ---- SoundCloud — curated. Tagged source:"soundcloud" so the player swaps
+  // to the SC widget (which keeps playing in the background on mobile, unlike
+  // the YouTube iframe). Each entry includes `soundcloudTrackId` (numeric, as
+  // string) and `soundcloudUrl` (permalink for the open-externally button).
+  {
+    id: "sc:919842406", source: "soundcloud",
+    soundcloudTrackId: "919842406",
+    soundcloudUrl: "https://soundcloud.com/staticbenel-music/shake-ya-boom-boom",
+    title: "Shake Ya Boom Boom", artist: "Static & Ben El",
+    year: 2020, era: "israeli", mood: "מסיבה",
+    tags: ["soundcloud"],
+    thumbOverride: "https://i1.sndcdn.com/artworks-sjOy77y2uBtV-0-t500x500.jpg",
+  },
+  {
+    id: "sc:743227042", source: "soundcloud",
+    soundcloudTrackId: "743227042",
+    soundcloudUrl: "https://soundcloud.com/terramusicofficial/terra-feat-the-idan-raichel-project-boee-out-now-on-helicon-music",
+    title: "Bo'ee (TERRA Remix)", artist: "TERRA feat. The Idan Raichel Project",
+    year: 2020, era: "israeli", mood: "אלקטרוני",
+    tags: ["soundcloud"],
+    thumbOverride: "https://i1.sndcdn.com/artworks-000667284310-6knb5y-t500x500.jpg",
+  },
+  {
+    id: "sc:1472938726", source: "soundcloud",
+    soundcloudTrackId: "1472938726",
+    soundcloudUrl: "https://soundcloud.com/sagikariv/unicorn",
+    title: "Unicorn (Sagi Kariv & Itay Galo Remix)", artist: "Noa Kirel",
+    year: 2023, era: "israeli", mood: "דאנס",
+    tags: ["soundcloud"],
+    thumbOverride: "https://i1.sndcdn.com/artworks-Cg7N6itLKzVDZLnQ-w2mA9Q-t500x500.jpg",
+  },
+  {
+    id: "sc:599932230", source: "soundcloud",
+    soundcloudTrackId: "599932230",
+    soundcloudUrl: "https://soundcloud.com/mika-emporio/offer-nissim-feat-sarit-hadad-shufuni",
+    title: "SHUFUNI", artist: "Offer Nissim feat. Sarit Hadad",
+    year: 2019, era: "israeli", mood: "אלקטרוני",
+    tags: ["soundcloud", "mizrahi"],
+    thumbOverride: "https://i1.sndcdn.com/artworks-000514075476-jwbvjh-t500x500.jpg",
+  },
+
   // ---- Israeli — Mizrahi ----
   { id: "4UqSylnHP0s", title: "הלב נשבר", artist: "עופר לוי", year: 2010, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
   { id: "kLngP1AZlsQ", title: "לאן את", artist: "עופר לוי", year: 2014, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
@@ -120,6 +161,15 @@ export const MOOD_PRESETS = [
   { id: "latenight", emoji: "🌙", label: "לילה", prompt: "אווירה לילית, רכה ועמוקה, לשעות הקטנות" },
 ];
 
+// ---- Source handling ----
+// Songs default to "youtube" when the field is absent (backward-compatible with
+// the original catalog). SoundCloud songs carry `source: "soundcloud"` plus
+// `soundcloudTrackId` (numeric, as string) and `soundcloudUrl` (permalink).
+
+export function songSource(song) {
+  return song?.source === "soundcloud" ? "soundcloud" : "youtube";
+}
+
 export function youtubeEmbed(id, { autoplay = true } = {}) {
   const params = new URLSearchParams({
     rel: "0",
@@ -136,4 +186,37 @@ export function youtubeThumb(id) {
 
 export function youtubeWatchUrl(id) {
   return `https://www.youtube.com/watch?v=${id}`;
+}
+
+export function soundcloudEmbed(trackId, { autoplay = true } = {}) {
+  const trackUrl = `https://api.soundcloud.com/tracks/${trackId}`;
+  const params = new URLSearchParams({
+    url: trackUrl,
+    auto_play: autoplay ? "true" : "false",
+    hide_related: "true",
+    show_comments: "false",
+    show_user: "true",
+    show_reposts: "false",
+    show_teaser: "false",
+    visual: "true",
+  });
+  return `https://w.soundcloud.com/player/?${params.toString()}`;
+}
+
+export function songEmbed(song, opts) {
+  if (songSource(song) === "soundcloud") {
+    return soundcloudEmbed(song.soundcloudTrackId, opts);
+  }
+  return youtubeEmbed(song.id, opts);
+}
+
+export function songWatchUrl(song) {
+  if (songSource(song) === "soundcloud") return song.soundcloudUrl || "";
+  return youtubeWatchUrl(song.id);
+}
+
+export function songThumb(song) {
+  if (song?.thumbOverride) return song.thumbOverride;
+  if (songSource(song) === "soundcloud") return ""; // SC tracks should use thumbOverride; fall back to icon
+  return youtubeThumb(song.id);
 }

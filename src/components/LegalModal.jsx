@@ -8,12 +8,13 @@ const CONTENT = {
         <p>
           השירות מבוסס על הטמעת נגני YouTube (YouTube Embedded Player) בהתאם
           ל<a href="https://www.youtube.com/t/terms" target="_blank" rel="noreferrer">תנאי השירות של YouTube</a>.
-          כל השירים מוזרמים ישירות מ-YouTube ואינם מאוחסנים בשרתים שלנו.
+          חלק מהתוכן מוזרם מ-<a href="https://soundcloud.com/terms-of-use" target="_blank" rel="noreferrer">SoundCloud</a> בהתאם לתנאי השימוש שלהם.
+          כל השירים מוזרמים ישירות מהספקים ואינם מאוחסנים בשרתים שלנו.
         </p>
         <p>
           האפליקציה מספקת ממשק חיפוש וגילוי בלבד. אין כאן הורדה, אחסון, או הפצה של תוכן מוגן.
           הזכויות על כל שיר שייכות ליוצרים, אמנים וחברות תקליטים. אם אתה בעל זכויות וברצונך
-          להסיר תוכן, פנה ישירות ל-YouTube.
+          להסיר תוכן, פנה ישירות ל-YouTube או ל-SoundCloud.
         </p>
         <p>
           האפליקציה ניתנת "כפי שהיא", ללא אחריות. אין אנו אחראים לזמינות שירותי
@@ -31,8 +32,8 @@ const CONTENT = {
     body: (
       <>
         <p>
-          <strong>אנחנו לא אוספים נתוני האזנה.</strong> YouTube עצמה עשויה לאסוף נתונים לפי מדיניות
-          הפרטיות שלה — קרא את <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">מדיניות הפרטיות של Google</a>.
+          <strong>אנחנו לא אוספים נתוני האזנה.</strong> YouTube ו-SoundCloud עשויות לאסוף נתונים
+          לפי מדיניות הפרטיות שלהן — קרא את <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">מדיניות הפרטיות של Google</a> ואת <a href="https://soundcloud.com/pages/privacy" target="_blank" rel="noreferrer">מדיניות הפרטיות של SoundCloud</a>.
         </p>
         <p>
           מה אנחנו כן שומרים:
@@ -93,14 +94,15 @@ const CONTENT = {
     body: (
       <>
         <p>
-          <strong>🎵 כל התוכן מוזרם ישירות מ-YouTube.</strong> הזכויות שייכות ליוצרים
-          ולחברות התקליטים. אנחנו לא מאחסנים, מורידים, או מפיצים תוכן מוגן.
+          <strong>🎵 כל התוכן מוזרם ישירות מ-YouTube ומ-SoundCloud.</strong> הזכויות שייכות
+          ליוצרים ולחברות התקליטים. אנחנו לא מאחסנים, מורידים, או מפיצים תוכן מוגן.
         </p>
         <p>
           האפליקציה משתמשת ב:
         </p>
         <ul>
-          <li><a href="https://developers.google.com/youtube/iframe_api_reference" target="_blank" rel="noreferrer">YouTube Embedded Player</a> — ניגון השירים</li>
+          <li><a href="https://developers.google.com/youtube/iframe_api_reference" target="_blank" rel="noreferrer">YouTube Embedded Player</a> — ניגון שירי YouTube</li>
+          <li><a href="https://developers.soundcloud.com/docs/api/html5-widget" target="_blank" rel="noreferrer">SoundCloud HTML5 Widget</a> — ניגון שירי SoundCloud (כולל ניגון ברקע במובייל)</li>
           <li><a href="https://www.anthropic.com/" target="_blank" rel="noreferrer">Anthropic Claude</a> — בחירת פלייליסטים לפי מצב רוח</li>
           <li><a href="https://supabase.com/" target="_blank" rel="noreferrer">Supabase</a> — שמירת פלייליסטים</li>
           <li>פונט <a href="https://fonts.google.com/specimen/Heebo" target="_blank" rel="noreferrer">Heebo</a> מ-Google Fonts</li>

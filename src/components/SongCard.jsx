@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { youtubeThumb } from "../data/songs.js";
+import { songThumb, songSource } from "../data/songs.js";
 
 export default function SongCard({
   song,
@@ -32,9 +32,9 @@ export default function SongCard({
       aria-label={`נגן ${song.title} של ${song.artist}`}
     >
       <div className="song-thumb">
-        {!imgFailed ? (
+        {!imgFailed && songThumb(song) ? (
           <img
-            src={song.thumbOverride || youtubeThumb(song.id)}
+            src={songThumb(song)}
             alt=""
             loading="lazy"
             decoding="async"
@@ -50,6 +50,12 @@ export default function SongCard({
             <span></span><span></span><span></span>
           </span>
         )}
+        <span
+          className={`song-source-tag ${songSource(song) === "soundcloud" ? "src-sc" : "src-yt"}`}
+          aria-label={songSource(song) === "soundcloud" ? "מקור: SoundCloud" : "מקור: YouTube"}
+        >
+          {songSource(song) === "soundcloud" ? "SC" : "YT"}
+        </span>
       </div>
       <div className="song-body">
         <h3 className="song-title">{song.title}</h3>

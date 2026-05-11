@@ -3,7 +3,7 @@ import React from "react";
 export default function Header({ totalCount, favoritesCount, view, onChangeView }) {
   const tabs = [
     { id: "library", label: "הספרייה", count: totalCount, icon: "♪" },
-    { id: "youtube", label: "חפש ב-YouTube", icon: "🔍" },
+    { id: "search", label: "חפש מוזיקה", icon: "🔍" },
     { id: "favorites", label: "מועדפים", count: favoritesCount, icon: "♥" },
     { id: "playlists", label: "פלייליסטים", icon: "≡" },
   ];
