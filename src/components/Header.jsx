@@ -1,6 +1,11 @@
 import React from "react";
 
-export default function Header({ totalCount, favoritesCount, onShowFavorites, showingFavorites }) {
+export default function Header({ totalCount, favoritesCount, view, onChangeView }) {
+  const tabs = [
+    { id: "library", label: "הספרייה", count: totalCount, icon: "♪" },
+    { id: "favorites", label: "מועדפים", count: favoritesCount, icon: "♥" },
+    { id: "playlists", label: "פלייליסטים", icon: "≡" },
+  ];
   return (
     <header className="site-header" role="banner">
       <div className="brand">
@@ -13,35 +18,28 @@ export default function Header({ totalCount, favoritesCount, onShowFavorites, sh
               </linearGradient>
             </defs>
             <circle cx="16" cy="16" r="14" fill="url(#bm)" />
-            <path
-              d="M21 9v10.2a3.3 3.3 0 1 1-2-3V11.6l-6 1.6v7a3.3 3.3 0 1 1-2-3V11l10-2.7Z"
-              fill="#111827"
-            />
+            <path d="M21 9v10.2a3.3 3.3 0 1 1-2-3V11.6l-6 1.6v7a3.3 3.3 0 1 1-2-3V11l10-2.7Z" fill="#111827" />
           </svg>
         </span>
         <div className="brand-text">
           <h1>MusicStream</h1>
-          <p>שירים מכל הזמנים · דרך YouTube</p>
+          <p>שירים מכל הזמנים · עם AI</p>
         </div>
       </div>
 
       <nav className="header-nav" aria-label="ניווט ראשי">
-        <button
-          type="button"
-          className={`pill ${!showingFavorites ? "active" : ""}`}
-          onClick={() => onShowFavorites(false)}
-          aria-pressed={!showingFavorites}
-        >
-          הספרייה <span className="pill-count">{totalCount}</span>
-        </button>
-        <button
-          type="button"
-          className={`pill ${showingFavorites ? "active" : ""}`}
-          onClick={() => onShowFavorites(true)}
-          aria-pressed={showingFavorites}
-        >
-          <span aria-hidden="true">♥</span> מועדפים <span className="pill-count">{favoritesCount}</span>
-        </button>
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            className={`pill ${view === t.id ? "active" : ""}`}
+            onClick={() => onChangeView(t.id)}
+            aria-pressed={view === t.id}
+          >
+            <span aria-hidden="true">{t.icon}</span> {t.label}
+            {typeof t.count === "number" && <span className="pill-count">{t.count}</span>}
+          </button>
+        ))}
       </nav>
     </header>
   );

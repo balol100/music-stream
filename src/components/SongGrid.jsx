@@ -1,7 +1,18 @@
 import React from "react";
 import SongCard from "./SongCard.jsx";
 
-export default function SongGrid({ songs, currentId, favorites, onSelect, onToggleFavorite, view, emptyMessage }) {
+export default function SongGrid({
+  songs,
+  currentId,
+  favorites,
+  selectedIds,
+  selectionMode,
+  onSelect,
+  onToggleFavorite,
+  onToggleSelection,
+  view,
+  emptyMessage,
+}) {
   if (songs.length === 0) {
     return (
       <section className="empty" aria-live="polite">
@@ -12,6 +23,8 @@ export default function SongGrid({ songs, currentId, favorites, onSelect, onTogg
       </section>
     );
   }
+
+  const selectedSet = new Set(selectedIds ?? []);
 
   return (
     <section
@@ -24,8 +37,11 @@ export default function SongGrid({ songs, currentId, favorites, onSelect, onTogg
           song={song}
           isActive={song.id === currentId}
           isFavorite={favorites.includes(song.id)}
+          isSelected={selectedSet.has(song.id)}
+          selectionMode={selectionMode}
           onSelect={() => onSelect(song)}
           onToggleFavorite={() => onToggleFavorite(song.id)}
+          onToggleSelection={onToggleSelection ? () => onToggleSelection(song.id) : undefined}
           view={view}
         />
       ))}

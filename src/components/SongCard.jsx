@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { youtubeThumb } from "../data/songs.js";
 
-export default function SongCard({ song, isActive, isFavorite, onSelect, onToggleFavorite, view }) {
+export default function SongCard({
+  song,
+  isActive,
+  isFavorite,
+  isSelected,
+  onSelect,
+  onToggleFavorite,
+  onToggleSelection,
+  view,
+  selectionMode,
+}) {
   const [imgFailed, setImgFailed] = useState(false);
 
   function handleKeyDown(e) {
@@ -13,7 +23,7 @@ export default function SongCard({ song, isActive, isFavorite, onSelect, onToggl
 
   return (
     <article
-      className={`song ${isActive ? "is-active" : ""} ${view === "list" ? "song-list" : ""}`}
+      className={`song ${isActive ? "is-active" : ""} ${isSelected ? "is-selected" : ""} ${view === "list" ? "song-list" : ""}`}
       onClick={onSelect}
       onKeyDown={handleKeyDown}
       role="button"
@@ -49,26 +59,42 @@ export default function SongCard({ song, isActive, isFavorite, onSelect, onToggl
           <span className="badge badge-soft">{song.mood}</span>
         </div>
       </div>
-      <button
-        type="button"
-        className={`song-heart ${isFavorite ? "active" : ""}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleFavorite();
-        }}
-        aria-pressed={isFavorite}
-        aria-label={isFavorite ? `הסר את ${song.title} ממועדפים` : `הוסף את ${song.title} למועדפים`}
-      >
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path
-            d="M12 21s-7.5-4.7-9.6-9.2C.7 8.2 3 4.5 6.6 4.5c2 0 3.4 1 4.4 2.4 1-1.4 2.4-2.4 4.4-2.4 3.6 0 5.9 3.7 4.2 7.3C19.5 16.3 12 21 12 21Z"
-            fill={isFavorite ? "currentColor" : "none"}
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+
+      <div className="song-actions">
+        {(selectionMode || isSelected) && onToggleSelection && (
+          <button
+            type="button"
+            className={`song-action song-add ${isSelected ? "active" : ""}`}
+            onClick={(e) => { e.stopPropagation(); onToggleSelection(); }}
+            aria-pressed={isSelected}
+            aria-label={isSelected ? `הסר את ${song.title} מהפלייליסט שביצירה` : `הוסף את ${song.title} לפלייליסט שביצירה`}
+            title={isSelected ? "הסר מהפלייליסט שביצירה" : "הוסף לפלייליסט שביצירה"}
+          >
+            {isSelected ? (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12l5 5L20 7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/></svg>
+            )}
+          </button>
+        )}
+        <button
+          type="button"
+          className={`song-action song-heart ${isFavorite ? "active" : ""}`}
+          onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+          aria-pressed={isFavorite}
+          aria-label={isFavorite ? `הסר את ${song.title} ממועדפים` : `הוסף את ${song.title} למועדפים`}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path
+              d="M12 21s-7.5-4.7-9.6-9.2C.7 8.2 3 4.5 6.6 4.5c2 0 3.4 1 4.4 2.4 1-1.4 2.4-2.4 4.4-2.4 3.6 0 5.9 3.7 4.2 7.3C19.5 16.3 12 21 12 21Z"
+              fill={isFavorite ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
     </article>
   );
 }

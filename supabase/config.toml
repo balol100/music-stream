@@ -1,0 +1,4 @@
+project_id = "music-stream-app"
+
+[functions.music-mood]
+verify_jwt = false
