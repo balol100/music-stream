@@ -1,5 +1,44 @@
 import { supabase, FUNCTIONS_BASE, DEVICE_ID } from "./supabase.js";
 
+export async function searchYouTube(query) {
+  const res = await fetch(`${FUNCTIONS_BASE}/youtube-search`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${supabase.supabaseKey}`,
+      apikey: supabase.supabaseKey,
+    },
+    body: JSON.stringify({ query }),
+  });
+  const data = await res.json().catch(() => ({ error: "bad_json" }));
+  if (!res.ok) {
+    const err = new Error(data?.message || data?.error || `HTTP ${res.status}`);
+    err.code = data?.error;
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+export async function appendSongsToPlaylist(playlistId, songsToAdd) {
+  const { data: existing, error: fetchErr } = await supabase
+    .from("music_playlists")
+    .select("songs, created_by")
+    .eq("id", playlistId)
+    .single();
+  if (fetchErr) throw fetchErr;
+  const current = Array.isArray(existing?.songs) ? existing.songs : [];
+  const knownIds = new Set(current.map((s) => s.id));
+  const additions = songsToAdd.filter((s) => !knownIds.has(s.id));
+  if (additions.length === 0) return { added: 0 };
+  const { error: updateErr } = await supabase
+    .from("music_playlists")
+    .update({ songs: [...current, ...additions] })
+    .eq("id", playlistId);
+  if (updateErr) throw updateErr;
+  return { added: additions.length };
+}
+
 export async function generateMoodPlaylist({ mood, prompt, songs }) {
   const { data: session } = await supabase.auth.getSession();
   const token = session?.session?.access_token ?? supabase.supabaseKey;

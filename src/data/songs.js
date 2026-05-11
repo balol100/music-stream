@@ -1,5 +1,6 @@
 export const ERAS = [
   { value: "all", label: "הכול" },
+  { value: "user", label: "השירים שלי" },
   { value: "israeli", label: "ישראלי" },
   { value: "mizrahi", label: "מזרחי" },
   { value: "60s-70s", label: "60–70" },
@@ -104,6 +105,7 @@ export const MOODS = [...new Set(SONGS.map((s) => s.mood))].sort((a, b) => a.loc
 export function matchesEra(song, eraValue) {
   if (eraValue === "all") return true;
   if (eraValue === "mizrahi") return song.tags?.includes("mizrahi") ?? false;
+  if (eraValue === "user") return song.tags?.includes("user") ?? false;
   return song.era === eraValue;
 }
 

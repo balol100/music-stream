@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { SONGS, MOODS, matchesEra } from "./data/songs.js";
+import { SONGS as BASE_SONGS, MOODS, matchesEra } from "./data/songs.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
+import { useUserSongs, ytResultToSong } from "./hooks/useUserSongs.js";
 import Header from "./components/Header.jsx";
 import Player from "./components/Player.jsx";
 import Filters from "./components/Filters.jsx";
@@ -11,32 +12,53 @@ import Footer from "./components/Footer.jsx";
 import MoodAI from "./components/MoodAI.jsx";
 import AIPlaylistCard from "./components/AIPlaylistCard.jsx";
 import PlaylistsPanel from "./components/PlaylistsPanel.jsx";
+import YouTubeSearch from "./components/YouTubeSearch.jsx";
+import LegalModal from "./components/LegalModal.jsx";
+import AccessibilityPanel from "./components/AccessibilityPanel.jsx";
 import { savePlaylist, incrementPlayCount } from "./lib/api.js";
 
 export default function App() {
   const [selectedEra, setSelectedEra] = useState("all");
   const [selectedMood, setSelectedMood] = useState(null);
   const [query, setQuery] = useState("");
-  const [currentSong, setCurrentSong] = useState(SONGS[0]);
   const [favorites, setFavorites] = useLocalStorage("musicstream:favorites", []);
   const [view, setView] = useLocalStorage("musicstream:view", "grid");
-  const [activeTab, setActiveTab] = useState("library"); // library | favorites | playlists
+  const [activeTab, setActiveTab] = useState("library"); // library | youtube | favorites | playlists
   const [isShuffle, setIsShuffle] = useLocalStorage("musicstream:shuffle", false);
   const [isRepeat, setIsRepeat] = useLocalStorage("musicstream:repeat", false);
   const [toast, setToast] = useState("");
 
   const [aiPlaylist, setAiPlaylist] = useState(null);
   const [aiSavedId, setAiSavedId] = useState(null);
-  const [queue, setQueue] = useState(null); // {name, songIds[]} when playing a playlist
+  const [queue, setQueue] = useState(null);
   const [selectedSongIds, setSelectedSongIds] = useState([]);
   const [playlistsRefresh, setPlaylistsRefresh] = useState(0);
+  const [legalKind, setLegalKind] = useState(null);
 
   const searchRef = useRef(null);
   const playerRef = useRef(null);
 
+  const { userSongs, addFromYt, has: hasUserSong } = useUserSongs();
+  const catalog = useMemo(() => {
+    const baseIds = new Set(BASE_SONGS.map((s) => s.id));
+    // User songs first (most recently added on top), then base catalog. De-dupe by id.
+    const merged = [];
+    const seen = new Set();
+    for (const s of userSongs) {
+      if (!seen.has(s.id)) { merged.push(s); seen.add(s.id); }
+    }
+    for (const s of BASE_SONGS) {
+      if (!seen.has(s.id)) { merged.push(s); seen.add(s.id); }
+    }
+    void baseIds;
+    return merged;
+  }, [userSongs]);
+
+  const [currentSong, setCurrentSong] = useState(catalog[0]);
+
   const filteredSongs = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return SONGS.filter((song) => {
+    return catalog.filter((song) => {
       if (activeTab === "favorites" && !favorites.includes(song.id)) return false;
       if (!matchesEra(song, selectedEra)) return false;
       if (selectedMood && song.mood !== selectedMood) return false;
@@ -46,12 +68,12 @@ export default function App() {
       }
       return true;
     });
-  }, [query, selectedEra, selectedMood, favorites, activeTab]);
+  }, [catalog, query, selectedEra, selectedMood, favorites, activeTab]);
 
   const playPool = useMemo(() => {
     if (queue && queue.songs.length) return queue.songs;
-    return filteredSongs.length ? filteredSongs : SONGS;
-  }, [queue, filteredSongs]);
+    return filteredSongs.length ? filteredSongs : catalog;
+  }, [queue, filteredSongs, catalog]);
 
   const pickNext = useCallback(
     (direction) => {
@@ -121,7 +143,7 @@ export default function App() {
   const handleAIPlaylist = useCallback((playlist) => {
     setAiPlaylist(playlist);
     setAiSavedId(null);
-    const songMap = new Map(SONGS.map((s) => [s.id, s]));
+    const songMap = new Map(catalog.map((s) => [s.id, s]));
     const queueSongs = (playlist.songs ?? []).map((x) => songMap.get(x.id)).filter(Boolean);
     if (queueSongs.length === 0) {
       setToast("ה-AI לא מצא שירים מתאימים — נסה שוב.");
@@ -133,12 +155,12 @@ export default function App() {
     if (window.matchMedia("(max-width: 980px)").matches) {
       setTimeout(() => playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
     }
-  }, []);
+  }, [catalog]);
 
   const handleAIError = useCallback((err) => {
     const msg = err?.code === "rate_limited"
       ? (err.message || "הגעת למכסה היומית של AI.")
-      : (err?.message || "ה-AI לא הצליח להגיב.");
+      : (err?.message || "פעולה נכשלה.");
     setToast(msg);
   }, []);
 
@@ -171,14 +193,26 @@ export default function App() {
     }
   }, []);
 
-  const handlePlayOneAISong = useCallback((song) => {
-    setCurrentSong(song);
-  }, []);
-
   const clearQueue = useCallback(() => {
     setQueue(null);
     setToast("היציאה ממצב פלייליסט");
   }, []);
+
+  // YouTube search → play / add to catalog
+  const handleYtPlay = useCallback((ytResult) => {
+    addFromYt(ytResult);
+    const song = ytResultToSong(ytResult);
+    setCurrentSong(song);
+    setToast(`▶ ${song.title}`);
+    if (window.matchMedia("(max-width: 980px)").matches) {
+      setTimeout(() => playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    }
+  }, [addFromYt]);
+
+  const handleYtAddToCatalog = useCallback((ytResult) => {
+    const added = addFromYt(ytResult);
+    setToast(added ? "נוסף לקטלוג ✓" : "כבר בקטלוג");
+  }, [addFromYt]);
 
   useKeyboardShortcuts({
     onArrowLeft: playPrev,
@@ -196,14 +230,14 @@ export default function App() {
   });
 
   const currentIsFavorite = favorites.includes(currentSong.id);
-  const showLibraryUI = activeTab !== "playlists";
+  const isLibraryLike = activeTab === "library" || activeTab === "favorites";
 
   return (
     <>
       <a href="#main" className="skip-link">דלג לתוכן הראשי</a>
       <div className="app-shell">
         <Header
-          totalCount={SONGS.length}
+          totalCount={catalog.length}
           favoritesCount={favorites.length}
           view={activeTab}
           onChangeView={(v) => {
@@ -220,7 +254,7 @@ export default function App() {
                 שירים מכל הזמנים, <span className="grad">בלחיצה אחת.</span>
               </h2>
               <p className="hero-sub">
-                ספרייה עם {SONGS.length} להיטים — קלאסיקות, עברית, פופ עכשווי. תן ל-AI לבחור פלייליסט לפי מצב הרוח, או בנה אחד בעצמך.
+                ספרייה עם {catalog.length} להיטים — קלאסיקות, עברית, פופ עכשווי, מזרחי. תן ל-AI לבחור פלייליסט לפי מצב הרוח, או חפש כל שיר ישירות ב-YouTube.
               </p>
               <div className="hero-actions">
                 <button type="button" onClick={playRandom} className="btn btn-primary">
@@ -253,33 +287,43 @@ export default function App() {
             />
           </section>
 
-          <MoodAI
-            catalog={SONGS}
-            onPlaylistGenerated={handleAIPlaylist}
-            onError={handleAIError}
-          />
+          {activeTab !== "youtube" && (
+            <MoodAI
+              catalog={catalog}
+              onPlaylistGenerated={handleAIPlaylist}
+              onError={handleAIError}
+            />
+          )}
 
-          {aiPlaylist && (
+          {aiPlaylist && activeTab !== "youtube" && (
             <AIPlaylistCard
               playlist={aiPlaylist}
-              songs={SONGS}
+              songs={catalog}
               currentId={currentSong.id}
               saved={!!aiSavedId}
               onPlayAll={() => {
-                const songMap = new Map(SONGS.map((s) => [s.id, s]));
+                const songMap = new Map(catalog.map((s) => [s.id, s]));
                 const queueSongs = (aiPlaylist.songs ?? []).map((x) => songMap.get(x.id)).filter(Boolean);
                 if (queueSongs.length) {
                   setQueue({ name: aiPlaylist.playlistName, songs: queueSongs, isAi: true });
                   setCurrentSong(queueSongs[0]);
                 }
               }}
-              onPlayOne={handlePlayOneAISong}
+              onPlayOne={(s) => setCurrentSong(s)}
               onSave={handleSaveAIPlaylist}
               onDismiss={() => setAiPlaylist(null)}
             />
           )}
 
-          {showLibraryUI ? (
+          {activeTab === "youtube" ? (
+            <YouTubeSearch
+              onPlay={handleYtPlay}
+              onAddToCatalog={handleYtAddToCatalog}
+              isInCatalog={(id) => hasUserSong(id) || BASE_SONGS.some((s) => s.id === id)}
+              onError={handleAIError}
+              onToast={setToast}
+            />
+          ) : isLibraryLike ? (
             <>
               <Filters
                 ref={searchRef}
@@ -328,7 +372,7 @@ export default function App() {
             </>
           ) : (
             <PlaylistsPanel
-              songs={SONGS}
+              songs={catalog}
               selectedSongIds={selectedSongIds}
               refreshSignal={playlistsRefresh}
               onPlayPlaylist={handlePlayPlaylist}
@@ -339,10 +383,12 @@ export default function App() {
           )}
         </main>
 
-        <Footer />
+        <Footer onOpenLegal={setLegalKind} />
       </div>
 
       <Toast message={toast} onDismiss={() => setToast("")} />
+      <AccessibilityPanel onOpenDeclaration={() => setLegalKind("accessibility")} />
+      <LegalModal kind={legalKind} onClose={() => setLegalKind(null)} />
     </>
   );
 }

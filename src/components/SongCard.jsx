@@ -34,7 +34,7 @@ export default function SongCard({
       <div className="song-thumb">
         {!imgFailed ? (
           <img
-            src={youtubeThumb(song.id)}
+            src={song.thumbOverride || youtubeThumb(song.id)}
             alt=""
             loading="lazy"
             decoding="async"
