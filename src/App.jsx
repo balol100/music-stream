@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { SONGS, MOODS } from "./data/songs.js";
+import { SONGS, MOODS, matchesEra } from "./data/songs.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts.js";
 import Header from "./components/Header.jsx";
@@ -38,7 +38,7 @@ export default function App() {
     const q = query.trim().toLowerCase();
     return SONGS.filter((song) => {
       if (activeTab === "favorites" && !favorites.includes(song.id)) return false;
-      if (selectedEra !== "all" && song.era !== selectedEra) return false;
+      if (!matchesEra(song, selectedEra)) return false;
       if (selectedMood && song.mood !== selectedMood) return false;
       if (q) {
         const haystack = `${song.title} ${song.artist} ${song.mood}`.toLowerCase();

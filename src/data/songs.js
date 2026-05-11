@@ -1,6 +1,7 @@
 export const ERAS = [
   { value: "all", label: "הכול" },
   { value: "israeli", label: "ישראלי" },
+  { value: "mizrahi", label: "מזרחי" },
   { value: "60s-70s", label: "60–70" },
   { value: "80s-90s", label: "80–90" },
   { value: "2000s", label: "2000" },
@@ -8,8 +9,34 @@ export const ERAS = [
   { value: "new", label: "חדשים" },
 ];
 
+// "tags" are additional, cross-cutting categories — they let a song appear in
+// more than one filter (e.g. an Eyal Golan song lives in "ישראלי" via `era`
+// but also shows under "מזרחי" via `tags`).
 export const SONGS = [
-  // ---- Israeli ----
+  // ---- Israeli — Mizrahi ----
+  { id: "4UqSylnHP0s", title: "הלב נשבר", artist: "עופר לוי", year: 2010, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "kLngP1AZlsQ", title: "לאן את", artist: "עופר לוי", year: 2014, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "IsV8UoAB0tg", title: "שיר מלחמה", artist: "עופר לוי וליהי טולדנו", year: 2023, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "fFcvMPuM6mc", title: "אהבה בתוכי", artist: "שרית חדד", year: 2010, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "6UduwaNze6M", title: "אהבה כמו שלנו", artist: "שרית חדד", year: 2021, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "0uv1Av0vRHw", title: "ילדה של אהבה", artist: "שרית חדד", year: 2002, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "IPNZtZPxJGE", title: "כמו פעם", artist: "זהבה בן", year: 2022, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "_-yir5W2ISk", title: "חוזרת לאותה שכונה", artist: "זהבה בן", year: 2023, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "mUsr2qtzeos", title: "מחרוזת מרוקאית", artist: "זהבה בן", year: 2025, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "seXQgir848o", title: "מלא עוד כוס חבר", artist: "אבי ביטר", year: 2020, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "Hmpe0x75AhI", title: "כאב ואכזבות", artist: "אבי ביטר", year: 2018, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "t1QwkaHU6Dw", title: "סודות האהבה", artist: "משה פרץ", year: 2012, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "0ZfRNQrNKqE", title: "בין כל האנשים", artist: "משה פרץ", year: 2013, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "jQhB3UltUDI", title: "פסטיבל", artist: "ליאור נרקיס", year: 2020, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "Zwb6pkGJ1DU", title: "וזה חזק", artist: "ליאור נרקיס", year: 2022, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "tp_c7Exeh9Y", title: "שדות של אירוסים", artist: "ליאור נרקיס", year: 2008, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "5JQB8VkrXJ4", title: "מחרוזת שיר השירים", artist: "דקלון", year: 2017, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "5GKHRCaM8LY", title: "מחרוזת תימנית", artist: "דקלון", year: 2014, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "ZGjc2XE_mFE", title: "כינור דוד", artist: "שימי תבורי", year: 1978, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "CtS16aYodP4", title: "האור בקצה המנהרה", artist: "שימי תבורי", year: 1995, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "SZgF5Dhy8Mo", title: "עוד סיפור אחד של אהבה", artist: "שימי תבורי", year: 2019, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+
+  // ---- Israeli — other (non-Mizrahi) ----
   { id: "nI8n20UpaBY", title: "ואם תבואי אליי", artist: "עידן רייכל", year: 2005, era: "israeli", mood: "מזרח־תיכוני" },
   { id: "QbtaJt2D4OY", title: "ארץ", artist: "עידן רייכל", year: 2006, era: "israeli", mood: "מזרח־תיכוני" },
   { id: "_qCtDKOAIvY", title: "אין לך דאגות", artist: "עידן רייכל", year: 2008, era: "israeli", mood: "רגוע" },
@@ -17,13 +44,13 @@ export const SONGS = [
   { id: "v655uiMfFdM", title: "לטרוף את החיים", artist: "שלמה ארצי", year: 2010, era: "israeli", mood: "פופ" },
   { id: "3Z5tv23K3yk", title: "תרקוד", artist: "שלמה ארצי", year: 2005, era: "israeli", mood: "פופ" },
   { id: "uwWzHlvD6I0", title: "כל מה שתרצה", artist: "שלמה ארצי", year: 2013, era: "israeli", mood: "פופ" },
-  { id: "nMQw29nfzpg", title: "תל אביב", artist: "עומר אדם", year: 2013, era: "israeli", mood: "מסיבה" },
+  { id: "nMQw29nfzpg", title: "תל אביב", artist: "עומר אדם", year: 2013, era: "israeli", mood: "מסיבה", tags: ["mizrahi"] },
   { id: "r4wbdKmM3bQ", title: "Unicorn", artist: "נועה קירל", year: 2023, era: "israeli", mood: "פופ" },
   { id: "4--8fjxjkYU", title: "Deja Vu", artist: "נועה קירל", year: 2022, era: "israeli", mood: "פופ" },
   { id: "FahQbSWiVvE", title: "בנות כמוני לא בוכות", artist: "נועה קירל", year: 2020, era: "israeli", mood: "פופ" },
-  { id: "Ga7SO82bcl4", title: "אהבה מנצחת הכל", artist: "אייל גולן", year: 2022, era: "israeli", mood: "מזרח־תיכוני" },
-  { id: "GdHWe14VBYo", title: "את לי הנצח", artist: "אייל גולן", year: 2021, era: "israeli", mood: "בלדה" },
-  { id: "xvhyIE6IyV0", title: "טק טק", artist: "אייל גולן", year: 2020, era: "israeli", mood: "מזרח־תיכוני" },
+  { id: "Ga7SO82bcl4", title: "אהבה מנצחת הכל", artist: "אייל גולן", year: 2022, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "GdHWe14VBYo", title: "את לי הנצח", artist: "אייל גולן", year: 2021, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
+  { id: "xvhyIE6IyV0", title: "טק טק", artist: "אייל גולן", year: 2020, era: "israeli", mood: "מזרחי", tags: ["mizrahi"] },
   { id: "AvUo1GKedIQ", title: "Bateria", artist: "סטטיק ובן אל", year: 2022, era: "israeli", mood: "מסיבה" },
   { id: "uQt29re8HLw", title: "כפית אחת של טוב", artist: "סטטיק ובן אל", year: 2020, era: "israeli", mood: "פופ" },
   { id: "Y-FiDJArnFI", title: "לילה מעדן", artist: "סטטיק ובן אל", year: 2021, era: "israeli", mood: "מסיבה" },
@@ -73,6 +100,12 @@ export const SONGS = [
 ];
 
 export const MOODS = [...new Set(SONGS.map((s) => s.mood))].sort((a, b) => a.localeCompare(b, "he"));
+
+export function matchesEra(song, eraValue) {
+  if (eraValue === "all") return true;
+  if (eraValue === "mizrahi") return song.tags?.includes("mizrahi") ?? false;
+  return song.era === eraValue;
+}
 
 export const MOOD_PRESETS = [
   { id: "party", emoji: "🎉", label: "מסיבה", prompt: "פלייליסט מסיבה אנרגטי לרקוד עליו עד אחרי חצות" },

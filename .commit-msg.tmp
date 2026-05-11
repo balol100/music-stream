@@ -1,0 +1,29 @@
+Add Mizrahi category + artists
+
+- New "mizrahi" era chip (label: "מזרחי") slotted between "ישראלי"
+  and "60-70".
+- New `tags?: string[]` field on songs and a `matchesEra` helper so a
+  single song can show under more than one era filter. Used in App.jsx
+  filtering. Default eras still match by `era ===` for compatibility.
+- 21 new Mizrahi songs (YouTube IDs verified via web search):
+  - עופר לוי: הלב נשבר, לאן את, שיר מלחמה (עם ליהי טולדנו)
+  - שרית חדד: אהבה בתוכי, אהבה כמו שלנו, ילדה של אהבה
+  - זהבה בן: כמו פעם, חוזרת לאותה שכונה, מחרוזת מרוקאית
+  - אבי ביטר: מלא עוד כוס חבר, כאב ואכזבות
+  - משה פרץ: סודות האהבה, בין כל האנשים
+  - ליאור נרקיס: פסטיבל, וזה חזק, שדות של אירוסים
+  - דקלון: מחרוזת שיר השירים, מחרוזת תימנית
+  - שימי תבורי: כינור דוד, האור בקצה המנהרה, עוד סיפור אחד של אהבה
+- Cross-tagged 4 existing songs as `mizrahi`:
+  - עומר אדם — תל אביב
+  - אייל גולן — אהבה מנצחת הכל, את לי הנצח, טק טק
+  These continue to show under "ישראלי" and now also under "מזרחי".
+
+Catalog total: 71 songs (was 50). "מזרחי" filter resolves to 25
+songs from 11 artists; "ישראלי" filter resolves to 41 songs (every
+Israeli act, including the Mizrahi ones).
+
+Smoke-tested in browser: all 8 era chips render, מזרחי filter returns
+expected artist set, switch back to הכול restores 71 songs.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
