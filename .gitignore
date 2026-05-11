@@ -42,3 +42,5 @@ lerna-debug.log*
 # Supabase CLI scratch
 supabase/.temp/
 supabase/.branches/
+*.commit-msg*
+.commit-msg.tmp
